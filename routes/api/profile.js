@@ -7,6 +7,7 @@ const auth=require('../../middleware/auth');
 const {check,validationResult}=require('express-validator');
 const Profile=require('../../models/Profile');
 const User=require('../../models/User');
+const Post=require('../../models/Post');
 const { profile_url } = require('gravatar');
 // @route    GET api/profile/me
 // @desc     Get current users/profile
@@ -174,9 +175,30 @@ router.get('/user/:user_id',async(req,res)=>{
 // @desc     Delete profile,user & post
 // @access   Private
 
+router.delete('/', auth, async (req, res) => {
+    try {
+      // Remove user posts
+      // Remove profile
+      // Remove user
+      await Promise.all([
+        Post.deleteMany({ user: req.user.id }),
+        Profile.findOneAndRemove({ user: req.user.id }),
+        User.findOneAndRemove({ _id: req.user.id })
+      ]);
+  
+      res.json({ msg: 'User deleted' });
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  });
+
+/*
 router.delete('/',auth,async(req,res)=>{
     try{
-        //@todo - remove users posts
+        //Remove user posts
+
+        await Post.deleteMany({user:req.user.id});
 
         //Remove Profile
         await Profile.findOneAndRemove({
@@ -195,7 +217,7 @@ router.delete('/',auth,async(req,res)=>{
         res.status(500).send('Server Error');
     }
 });
-
+*/
 // @route    PUT api/profile/experience
 // @desc     Add profile experience
 // @access   Private
