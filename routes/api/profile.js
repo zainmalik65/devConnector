@@ -38,7 +38,6 @@ router.get('/me',auth,async(req,res)=>{
         {
           return res.status(400).json({msg:"There is no profile for this user"});    
         }
-
     }catch(err)
     {
         console.error(err.message);
@@ -134,8 +133,6 @@ router.get('/',async(req,res)=>{
     try{
         const profiles= await Profile.find().populate('user',['name','avatar']);
         res.json({profiles});
-
-
     }catch(err){
         console.error(err.message);
         res.status(500).send('Server Error');
@@ -211,9 +208,7 @@ router.delete('/', auth, async (req, res) => {
 router.delete('/',auth,async(req,res)=>{
     try{
         //Remove user posts
-
         await Post.deleteMany({user:req.user.id});
-
         //Remove Profile
         await Profile.findOneAndRemove({
             user: req.user.id
@@ -222,10 +217,7 @@ router.delete('/',auth,async(req,res)=>{
         await User.findOneAndRemove({
             _id: req.user.id
         });
-
         res.json({msg: 'User deleted'});
-
-
     }catch(err){
         console.error(err.message);
         res.status(500).send('Server Error');
